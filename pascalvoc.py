@@ -342,15 +342,16 @@ os.makedirs(savePath)
 # Show plot during execution
 showPlot = args.showPlot
 
-# print('iouThreshold= %f' % iouThreshold)
-# print('savePath = %s' % savePath)
-# print('gtFormat = %s' % gtFormat)
-# print('detFormat = %s' % detFormat)
-# print('gtFolder = %s' % gtFolder)
-# print('detFolder = %s' % detFolder)
-# print('gtCoordType = %s' % gtCoordType)
-# print('detCoordType = %s' % detCoordType)
-# print('showPlot %s' % showPlot)
+print('iouThreshold= %f' % iouThreshold)
+print('savePath = %s' % savePath)
+print('gtFormat = %s' % gtFormat)
+print('detFormat = %s' % detFormat)
+print('gtFolder = %s' % gtFolder)
+print('detFolder = %s' % detFolder)
+print('gtCoordType = %s' % gtCoordType)
+print('detCoordType = %s' % detCoordType)
+print('showPlot %s' % showPlot)
+print()
 
 # Get groundtruth boxes
 allBoundingBoxes, allClasses = getBoundingBoxes(gtFolder,

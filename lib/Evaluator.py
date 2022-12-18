@@ -82,6 +82,8 @@ class Evaluator:
             # Get only detection of class c
             dects = []
             [dects.append(d) for d in detections if d[1] == c]
+            #print("dects " + str(dects))
+            
             # Get only ground truths of class c, use filename as key
             gts = {}
             npos = 0
@@ -89,24 +91,29 @@ class Evaluator:
                 if g[1] == c:
                     npos += 1
                     gts[g[0]] = gts.get(g[0], []) + [g]
-
+            print("Class  " + str(c) + " total positives in GT => " + str(npos))
+            
             # sort detections by decreasing confidence
             dects = sorted(dects, key=lambda conf: conf[2], reverse=True)
             TP = np.zeros(len(dects))
             FP = np.zeros(len(dects))
             # create dictionary with amount of gts for each image
             det = {key: np.zeros(len(gts[key])) for key in gts}
+            #print("det " + str(det))
 
-            # print("Evaluating class: %s (%d detections)" % (str(c), len(dects)))
+            print("Evaluating class: %s (%d detections)" % (str(c), len(dects)))
+            
             # Loop through detections
             for d in range(len(dects)):
-                # print('dect %s => %s' % (dects[d][0], dects[d][3],))
-                # Find ground truth image
+                #print('dect %s => %s' % (dects[d][0], dects[d][3],))
+                # Find ground truth image(s) if there are detections for that class in it
+                #print("gts for " + str(dects[d][0]) + " is = > " + str(gts))
                 gt = gts[dects[d][0]] if dects[d][0] in gts else []
+                #print("gt " + str(gt))
                 iouMax = sys.float_info.min
                 for j in range(len(gt)):
-                    # print('Ground truth gt => %s' % (gt[j][3],))
                     iou = Evaluator.iou(dects[d][3], gt[j][3])
+                    #Find ground truth instance with max iou 
                     if iou > iouMax:
                         iouMax = iou
                         jmax = j
@@ -115,15 +122,19 @@ class Evaluator:
                     if det[dects[d][0]][jmax] == 0:
                         TP[d] = 1  # count as true positive
                         det[dects[d][0]][jmax] = 1  # flag as already 'seen'
-                        # print("TP")
+                        #print("TP")
                     else:
                         FP[d] = 1  # count as false positive
-                        # print("FP")
+                        #print("FP")
                 # - A detected "cat" is overlaped with a GT "cat" with IOU >= IOUThreshold.
                 else:
                     FP[d] = 1  # count as false positive
-                    # print("FP")
+                    #print("FP due to less that threshold IOU")
+                #print("++++++++++++++++++++++++++++++++++++++++++")
             # compute precision, recall and average precision
+            #print("TP " + str(TP))
+            #print("FP " + str(FP))
+            
             acc_FP = np.cumsum(FP)
             acc_TP = np.cumsum(TP)
             rec = acc_TP / npos
@@ -146,6 +157,9 @@ class Evaluator:
                 'total FP': np.sum(FP)
             }
             ret.append(r)
+            print("Recall => " + str(rec))
+            print("Total TP => " + str(np.sum(TP)))
+            print("Total FP => " + str(np.sum(FP)))
         return ret
 
     def PlotPrecisionRecallCurve(self,
